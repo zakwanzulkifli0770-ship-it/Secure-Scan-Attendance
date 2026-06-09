@@ -8,18 +8,14 @@ export function AuthGuard({ children, requireRole }: { children: React.ReactNode
   const [, setLocation] = useLocation();
   const token = getToken();
 
-  // If no token at all, redirect immediately
   useEffect(() => {
     if (!token) {
       setLocation("/login");
     }
   }, [token, setLocation]);
 
-  const { data: user, isLoading, error } = useGetMe({ 
-    query: { 
-      enabled: !!token, 
-      retry: false
-    } 
+  const { data: user, isLoading, error } = useGetMe({
+    query: { enabled: !!token, retry: false, queryKey: ["me"] }
   });
 
   useEffect(() => {
@@ -30,7 +26,6 @@ export function AuthGuard({ children, requireRole }: { children: React.ReactNode
 
   useEffect(() => {
     if (user && requireRole && user.role !== requireRole) {
-      // User is logged in but doesn't have the right role
       setLocation(user.role === "admin" ? "/admin" : "/");
     }
   }, [user, requireRole, setLocation]);
@@ -39,7 +34,7 @@ export function AuthGuard({ children, requireRole }: { children: React.ReactNode
   if (isLoading) {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-background">
-        <Spinner size="lg" />
+        <Spinner className="size-8" />
       </div>
     );
   }

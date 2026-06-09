@@ -23,28 +23,26 @@ export default function Reports() {
 
   const handleExport = async () => {
     const res = await refetch();
-    if (res.data && res.data.length > 0) {
-      // In a real app, convert this JSON to CSV and trigger download
-      // For now, we'll just log it or simulate it
-      const csvData = convertToCSV(res.data);
-      downloadCSV(csvData, `attendance-report-${monthStr}.csv`);
+    if (res.data) {
+      // The API returns CSV text directly
+      downloadCSV(res.data, `attendance-report-${monthStr}.csv`);
     } else {
       alert("No data available to export for this month.");
     }
   };
 
-  const convertToCSV = (data: any[]) => {
+  const convertToCSV = (data: Record<string, unknown>[]) => {
     if (data.length === 0) return "";
     const headers = ["Employee ID", "Name", "Date", "Clock In", "Clock Out", "Hours"];
     const rows = data.map(record => {
-      // Simplistic mock data extraction
+      const emp = record.employee as Record<string, unknown> | undefined;
       return [
-        record.employee?.employeeId || "",
-        record.employee?.name || "",
+        emp?.employeeId ?? "",
+        emp?.name ?? "",
         record.date,
-        record.clockIn ? format(new Date(record.clockIn), "HH:mm") : "",
-        record.clockOut ? format(new Date(record.clockOut), "HH:mm") : "",
-        "8.0" // Mock calculated hours
+        record.clockIn ? format(new Date(record.clockIn as string), "HH:mm") : "",
+        record.clockOut ? format(new Date(record.clockOut as string), "HH:mm") : "",
+        "8.0"
       ].join(",");
     });
     return [headers.join(","), ...rows].join("\n");

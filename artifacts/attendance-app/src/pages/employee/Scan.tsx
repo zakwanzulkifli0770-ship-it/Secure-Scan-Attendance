@@ -38,31 +38,31 @@ export default function Scan() {
 
   // Initialize QR Scanner
   useEffect(() => {
-    if (step === "SCAN") {
-      const scanner = new Html5Qrcode("qr-reader");
-      scannerRef.current = scanner;
+    if (step !== "SCAN") return;
 
-      scanner.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
-          scanner.stop().then(() => {
-            setQrToken(decodedText);
-            setStep("LOCATION");
-          });
-        },
-        () => {} // ignore errors
-      ).catch((err) => {
-        console.error("Error starting scanner", err);
-        toast({ variant: "destructive", title: "Camera Error", description: "Could not access camera" });
-      });
+    const scanner = new Html5Qrcode("qr-reader");
+    scannerRef.current = scanner;
 
-      return () => {
-        if (scannerRef.current && scannerRef.current.isScanning) {
-          scannerRef.current.stop().catch(console.error);
-        }
-      };
-    }
+    scanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      (decodedText) => {
+        scanner.stop().then(() => {
+          setQrToken(decodedText);
+          setStep("LOCATION");
+        });
+      },
+      () => {} // ignore errors
+    ).catch((err) => {
+      console.error("Error starting scanner", err);
+      toast({ variant: "destructive", title: "Camera Error", description: "Could not access camera" });
+    });
+
+    return () => {
+      if (scannerRef.current && scannerRef.current.isScanning) {
+        scannerRef.current.stop().catch(console.error);
+      }
+    };
   }, [step, toast]);
 
   // Capture Location
@@ -219,7 +219,7 @@ export default function Scan() {
 
       {step === "SUBMITTING" && (
         <div className="flex-1 flex flex-col items-center justify-center p-6 text-center text-white">
-          <Spinner size="xl" className="text-primary mb-4" />
+          <Spinner className="size-12 text-primary mb-4" />
           <h2 className="text-2xl font-bold">Submitting</h2>
           <p className="text-muted-foreground mt-2">Recording your attendance...</p>
         </div>

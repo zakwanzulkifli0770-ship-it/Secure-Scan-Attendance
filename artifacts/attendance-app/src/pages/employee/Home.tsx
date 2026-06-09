@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { format } from "date-fns";
-import { Clock, QrCode, ArrowRight, User } from "lucide-react";
+import { Clock, QrCode, History } from "lucide-react";
 import { useGetTodayAttendance, useGetMe, getGetTodayAttendanceQueryKey } from "@workspace/api-client-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { setToken } from "@/lib/auth";
 import { useLocation } from "wouter";
+import { User } from "lucide-react";
 
 export default function EmployeeHome() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -33,7 +34,7 @@ export default function EmployeeHome() {
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <Spinner size="lg" />
+        <Spinner className="size-8" />
       </div>
     );
   }

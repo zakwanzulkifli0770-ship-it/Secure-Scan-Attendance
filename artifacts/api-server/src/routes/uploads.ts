@@ -4,16 +4,18 @@ import fs from "fs";
 
 const router = Router();
 
-function getWorkspaceRoot(): string {
+function getUploadsDir(): string {
+  if (process.env.VERCEL) return "/tmp/uploads";
   const cwd = process.cwd();
-  return cwd.endsWith(path.join("artifacts", "api-server"))
+  const root = cwd.endsWith(path.join("artifacts", "api-server"))
     ? path.resolve(cwd, "../..")
     : cwd;
+  return path.resolve(root, "artifacts/api-server/uploads");
 }
 
 router.get("/uploads/:filename", (req, res): void => {
   const filename = path.basename(req.params.filename);
-  const uploadsDir = path.resolve(getWorkspaceRoot(), "artifacts/api-server/uploads");
+  const uploadsDir = getUploadsDir();
   const filepath = path.join(uploadsDir, filename);
 
   if (!fs.existsSync(filepath)) {

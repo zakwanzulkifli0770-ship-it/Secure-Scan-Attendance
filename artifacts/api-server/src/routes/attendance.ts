@@ -32,16 +32,19 @@ function getDistanceMeters(lat1: number, lng1: number, lat2: number, lng2: numbe
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function getWorkspaceRoot(): string {
+function getUploadsDir(): string {
+  // Vercel serverless: only /tmp is writable
+  if (process.env.VERCEL) return "/tmp/uploads";
   const cwd = process.cwd();
-  return cwd.endsWith(path.join("artifacts", "api-server"))
+  const root = cwd.endsWith(path.join("artifacts", "api-server"))
     ? path.resolve(cwd, "../..")
     : cwd;
+  return path.resolve(root, "artifacts/api-server/uploads");
 }
 
 function saveSelfie(base64Data: string, employeeId: number, type: "in" | "out"): string | null {
   try {
-    const uploadsDir = path.resolve(getWorkspaceRoot(), "artifacts/api-server/uploads");
+    const uploadsDir = getUploadsDir();
     if (!fs.existsSync(uploadsDir)) {
       fs.mkdirSync(uploadsDir, { recursive: true });
     }
